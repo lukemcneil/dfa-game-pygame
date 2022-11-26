@@ -20,6 +20,7 @@ red = [255,0,0]
 circles = []
 lines = []
 clicked_circle = None
+selected_letter = "0"
 
 def drawCircles(circles):
     for circle in circles:
@@ -55,6 +56,19 @@ class Edge:
     self.letter
 
 
+# pygame.font.init()
+# my_font = pygame.font.SysFont('Comic Sans MS', 30)
+# text_surface = my_font.render('Some Text', False, (0, 0, 0))
+# print(text_surface)
+
+font = pygame.font.SysFont(None, 25)
+
+def show_text( msg, color, position):
+    global canvas
+    text = font.render( msg, True, color)
+    canvas.blit(text, position)
+
+show_text(selected_letter, line_color, [10, 10])
 
 while not exit:
     for event in pygame.event.get():
@@ -78,8 +92,12 @@ while not exit:
                         lines.append([circle_two.position, circle_two.position])
                         pygame.draw.circle(canvas, circle_color, circle_two.position, radius)
                         clicked_circle = None
+                        text_position = [self_arrow_center[0]-radius/3, self_arrow_center[1] - radius/2]
+                        show_text(selected_letter, line_color, text_position)
                         break
                     pygame.draw.line(canvas, line_color, clicked_circle.position, circle_two.position, width=1)
+                    midpoint = [(clicked_circle.position[0] + circle_two.position[0]) / 2, (clicked_circle.position[1] + circle_two.position[1]) / 2]
+                    show_text(selected_letter, line_color, midpoint)
                     lines.append([clicked_circle, circle_two])
                     pygame.draw.circle(canvas, circle_color, clicked_circle.position, radius)
                     pygame.draw.circle(canvas, circle_color, circle_two.position, radius)
@@ -91,5 +109,14 @@ while not exit:
                 clicked_circle = circlePosition(mouse_position)
                 if clicked_circle:
                     pygame.draw.circle(canvas, red, clicked_circle.position, radius)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_0:
+                selected_letter = "0"
+                pygame.draw.rect(canvas, [0, 0, 0], pygame.Rect(0, 0, 30, 30))
+                show_text(selected_letter, line_color, [10, 10])
+            elif event.key == pygame.K_1:
+                selected_letter = "1"
+                pygame.draw.rect(canvas, [0, 0, 0], pygame.Rect(0, 0, 30, 30))
+                show_text(selected_letter, line_color, [10, 10])
 
     pygame.display.update()
