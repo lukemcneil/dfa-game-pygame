@@ -23,7 +23,7 @@ clicked_circle = None
 
 def drawCircles(circles):
     for circle in circles:
-        pygame.draw.circle(canvas, circle_color, circle, radius)
+        pygame.draw.circle(canvas, circle_color, circle.position, radius)
 
 def drawLines(circles):
     for circle1 in circles:
@@ -33,16 +33,27 @@ def drawLines(circles):
 
 def colliding(location):
     for circle in circles:
-        distance = math.sqrt((circle[0] - location[0])**2 + (circle[1] - location[1])**2)
+        distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
         if distance < 2*radius + (radius / 2):
             return False
     return True
 
 def circlePosition(location):
     for circle in circles:
-        distance = math.sqrt((circle[0] - location[0])**2 + (circle[1] - location[1])**2)
+        distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
         if distance <= radius:
             return circle
+
+class State:
+  def __init__(self, position):
+    self.position = position
+
+class Edge:
+  def __init__(self, start_state, end_state, letter):
+    self.start_state = start_state
+    self.end_state = end_state
+    self.letter
+
 
 
 while not exit:
@@ -52,7 +63,8 @@ while not exit:
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_position = pygame.mouse.get_pos()
             if colliding(mouse_position):
-                circles.append(mouse_position)
+                new_state = State(mouse_position)
+                circles.append(new_state)
             drawCircles(circles)
             clicked_circle = None
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
@@ -61,20 +73,23 @@ while not exit:
                 circle_two = circlePosition(mouse_position)
                 if circle_two:
                     if clicked_circle ==  circle_two:
-                        clicked_circle = [clicked_circle[0],clicked_circle[1] - radius]
-                        pygame.draw.circle(canvas, line_color, clicked_circle, radius, 1)
-                        lines.append([circle_two, circle_two])
-                        pygame.draw.circle(canvas, circle_color, circle_two, radius)
+                        self_arrow_center = [clicked_circle.position[0],clicked_circle.position[1] - radius]
+                        pygame.draw.circle(canvas, line_color, self_arrow_center, radius, 1)
+                        lines.append([circle_two.position, circle_two.position])
+                        pygame.draw.circle(canvas, circle_color, circle_two.position, radius)
                         clicked_circle = None
                         break
-                    pygame.draw.line(canvas, line_color, clicked_circle, circle_two, width=1)
+                    pygame.draw.line(canvas, line_color, clicked_circle.position, circle_two.position, width=1)
                     lines.append([clicked_circle, circle_two])
-                    pygame.draw.circle(canvas, circle_color, clicked_circle, radius)
-                    pygame.draw.circle(canvas, circle_color, circle_two, radius)
+                    pygame.draw.circle(canvas, circle_color, clicked_circle.position, radius)
+                    pygame.draw.circle(canvas, circle_color, circle_two.position, radius)
+                    clicked_circle = None
+                else:
+                    pygame.draw.circle(canvas, circle_color, clicked_circle.position, radius)
                     clicked_circle = None
             else:
                 clicked_circle = circlePosition(mouse_position)
                 if clicked_circle:
-                    pygame.draw.circle(canvas, red, clicked_circle, radius)
+                    pygame.draw.circle(canvas, red, clicked_circle.position, radius)
 
     pygame.display.update()
