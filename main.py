@@ -30,7 +30,7 @@ selected_letter : str = "0"
 offset_x = 0
 offset_y = 0
 
-def getCircleCollidingWith(location):
+def canPutCircleHere(location):
 	for circle in states:
 		distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
 		if distance < 2*RADIUS + (RADIUS / 2):
@@ -43,10 +43,13 @@ def getCircleAtPosition(location):
 		if distance <= RADIUS:
 			return circle
 
-def removeEdges(edges, removedState):
-		for edge in edges:
-			if edge.start_state == removedState or edge.end_state == removedState:
-				edges.remove(edge)
+def removeEdges(removedState):
+	global edges
+	new_edges = []
+	for edge in edges:
+		if edge.start_state != removedState and edge.end_state != removedState:
+			new_edges.append(edge)
+	edges = new_edges
 
 drawDFA(canvas, states, edges, selected_letter)
 while not exit:
@@ -55,7 +58,7 @@ while not exit:
 			exit = True
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: #left click
 			mouse_position = pygame.mouse.get_pos()
-			if getCircleCollidingWith(mouse_position):
+			if canPutCircleHere(mouse_position):
 				new_state = State(list(mouse_position))
 				states.append(new_state)
 				dragged_circle = None
@@ -66,7 +69,6 @@ while not exit:
 					mouse_x, mouse_y = mouse_position
 					offset_x = dragged_state.position[0] - mouse_x
 					offset_y = dragged_state.position[1] - mouse_y
-
 			if clicked_circle:
 				clicked_circle.selected = False
 				clicked_circle = None
@@ -78,10 +80,10 @@ while not exit:
 				mouse_x, mouse_y = pygame.mouse.get_pos()
 				dragged_state.position[0] = mouse_x + offset_x
 				dragged_state.position[1] = mouse_y	+ offset_y
-		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2:
+		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2: # middle click
 			state_middle_clicked = getCircleAtPosition(pygame.mouse.get_pos())
 			states.remove(state_middle_clicked)
-			removeEdges(edges, state_middle_clicked)
+			removeEdges(state_middle_clicked)
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3: #right click
 			mouse_position = pygame.mouse.get_pos()
 			if clicked_circle:
