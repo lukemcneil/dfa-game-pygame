@@ -13,6 +13,7 @@ class State:
 	def __init__(self, position):
 		self.position : list[int, int] = position
 		self.selected : bool = False
+		self.dragging : bool = False
 
 class Edge:
 	def __init__(self, start_state, end_state, letter):
@@ -23,7 +24,11 @@ class Edge:
 states : "list[State]" = []
 edges : "list[Edge]" = []
 clicked_circle : State = None
+dragged_state : State = None
 selected_letter : str = "0"
+
+offset_x = 0
+offset_y = 0
 
 def getCircleCollidingWith(location):
 	for circle in states:
@@ -48,9 +53,26 @@ while not exit:
 			if getCircleCollidingWith(mouse_position):
 				new_state = State(list(mouse_position))
 				states.append(new_state)
+				dragged_circle = None
+			else:
+				dragged_state = getCircleAtPosition(mouse_position)
+				if dragged_state:
+					dragged_state.dragging = True
+					mouse_x, mouse_y = mouse_position
+					offset_x = dragged_state.position[0] - mouse_x
+					offset_y = dragged_state.position[1] - mouse_y
+
 			if clicked_circle:
 				clicked_circle.selected = False
 				clicked_circle = None
+		elif event.type == pygame.MOUSEBUTTONUP:
+			if event.button == 1:            
+				dragged_state = False
+		elif event.type == pygame.MOUSEMOTION:
+			if (dragged_state):
+				mouse_x, mouse_y = pygame.mouse.get_pos()
+				dragged_state.position[0] = mouse_x + offset_x
+				dragged_state.position[1] = mouse_y	+ offset_y
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3: #right click
 			mouse_position = pygame.mouse.get_pos()
 			if clicked_circle:
