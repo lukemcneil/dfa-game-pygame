@@ -43,7 +43,7 @@ def getCircleAtPosition(location):
 		if distance <= RADIUS:
 			return circle
 
-def removeEdges(removedState):
+def removeEdges(edges, removedState):
 	for edge in edges.copy():
 		if edge.start_state == removedState or edge.end_state == removedState:
 			edges.remove(edge)
@@ -81,7 +81,7 @@ while not exit:
 			state_middle_clicked = getCircleAtPosition(pygame.mouse.get_pos())
 			if state_middle_clicked:
 				states.remove(state_middle_clicked)
-				removeEdges(state_middle_clicked)
+				removeEdges(edges, state_middle_clicked)
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3: #right click
 			mouse_position = pygame.mouse.get_pos()
 			if clicked_circle:
