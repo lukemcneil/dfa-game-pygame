@@ -30,7 +30,7 @@ selected_letter : str = "0"
 offset_x = 0
 offset_y = 0
 
-def getCircleCollidingWith(location):
+def canPutStateHere(location):
 	for circle in states:
 		distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
 		if distance < 2*RADIUS + (RADIUS / 2):
@@ -50,7 +50,7 @@ while not exit:
 			exit = True
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: #left click
 			mouse_position = pygame.mouse.get_pos()
-			if getCircleCollidingWith(mouse_position):
+			if canPutStateHere(mouse_position):
 				new_state = State(list(mouse_position))
 				states.append(new_state)
 				dragged_circle = None
