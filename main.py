@@ -44,12 +44,9 @@ def getCircleAtPosition(location):
 			return circle
 
 def removeEdges(removedState):
-	global edges
-	new_edges = []
-	for edge in edges:
-		if edge.start_state != removedState and edge.end_state != removedState:
-			new_edges.append(edge)
-	edges = new_edges
+	for edge in edges.copy():
+		if edge.start_state == removedState or edge.end_state == removedState:
+			edges.remove(edge)
 
 drawDFA(canvas, states, edges, selected_letter)
 while not exit:
@@ -82,8 +79,9 @@ while not exit:
 				dragged_state.position[1] = mouse_y	+ offset_y
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2: # middle click
 			state_middle_clicked = getCircleAtPosition(pygame.mouse.get_pos())
-			states.remove(state_middle_clicked)
-			removeEdges(state_middle_clicked)
+			if state_middle_clicked:
+				states.remove(state_middle_clicked)
+				removeEdges(state_middle_clicked)
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3: #right click
 			mouse_position = pygame.mouse.get_pos()
 			if clicked_circle:
