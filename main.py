@@ -22,8 +22,8 @@ class Edge:
 
 states : "list[State]" = []
 edges : "list[Edge]" = []
-clicked_circle = None
-selected_letter = "0"
+clicked_circle : State = None
+selected_letter : str = "0"
 
 def getCircleCollidingWith(location):
 	for circle in states:
