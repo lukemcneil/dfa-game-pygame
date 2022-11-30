@@ -30,7 +30,7 @@ def getCircleAtPosition(location):
 
 def removeEdges(removedState):
 	for state in dfa.states:
-		for letter in state.edges.keys():
+		for letter in list(state.edges.keys()):
 			if state.edges[letter] == removedState:
 				state.edges.pop(letter)
 
