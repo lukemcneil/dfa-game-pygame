@@ -1,6 +1,7 @@
 import pygame
 import math
-from drawDFA import drawDFA, RADIUS
+from draw_dfa import drawDFA, RADIUS
+from dfa_types import State, DFA
 
 pygame.init()
 
@@ -9,42 +10,31 @@ canvas = pygame.display.set_mode((500, 500))
 pygame.display.set_caption("DFA main board")
 exit = False
 
-class State:
-	def __init__(self, position):
-		self.position : list[int] = position
-		self.selected : bool = False
-
-class Edge:
-	def __init__(self, start_state, end_state, letter):
-		self.start_state : State = start_state
-		self.end_state : State = end_state
-		self.letter : str = letter
-
-states : "list[State]" = []
-edges : "list[Edge]" = []
+dfa = DFA([])
 clicked_circle : "State | None" = None
 dragged_state : "State | None" = None
 selected_letter : str = "0"
 
 def canPutCircleHere(location):
-	for circle in states:
+	for circle in dfa.states:
 		distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
 		if distance < 2*RADIUS + (RADIUS / 2):
 			return False
 	return True
 
 def getCircleAtPosition(location):
-	for circle in states:
+	for circle in dfa.states:
 		distance = math.sqrt((circle.position[0] - location[0])**2 + (circle.position[1] - location[1])**2)
 		if distance <= RADIUS:
 			return circle
 
-def removeEdges(edges, removedState):
-	for edge in edges.copy():
-		if edge.start_state == removedState or edge.end_state == removedState:
-			edges.remove(edge)
+def removeEdges(removedState):
+	for state in dfa.states:
+		for letter in state.edges.keys():
+			if state.edges[letter] == removedState:
+				state.edges.pop(letter)
 
-drawDFA(canvas, states, edges, selected_letter)
+drawDFA(canvas, dfa, selected_letter)
 while not exit:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -53,7 +43,7 @@ while not exit:
 			mouse_position = pygame.mouse.get_pos()
 			if canPutCircleHere(mouse_position):
 				new_state = State(list(mouse_position))
-				states.append(new_state)
+				dfa.states.append(new_state)
 				dragged_circle = None
 			else:
 				dragged_state = getCircleAtPosition(mouse_position)
@@ -71,14 +61,14 @@ while not exit:
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 2: # middle click
 			state_middle_clicked = getCircleAtPosition(pygame.mouse.get_pos())
 			if state_middle_clicked:
-				states.remove(state_middle_clicked)
-				removeEdges(edges, state_middle_clicked)
+				dfa.states.remove(state_middle_clicked)
+				removeEdges(state_middle_clicked)
 		elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3: #right click
 			mouse_position = pygame.mouse.get_pos()
 			if clicked_circle:
 				circle_two = getCircleAtPosition(mouse_position)
 				if circle_two:
-					edges.append(Edge(clicked_circle, circle_two, selected_letter))
+					clicked_circle.edges[selected_letter] = circle_two
 				clicked_circle.selected = False
 				clicked_circle = None
 			else:
@@ -90,6 +80,6 @@ while not exit:
 				selected_letter = "0"
 			elif event.key == pygame.K_1:
 				selected_letter = "1"
-	drawDFA(canvas, states, edges, selected_letter)
+	drawDFA(canvas, dfa, selected_letter)
 
 	pygame.display.update()
