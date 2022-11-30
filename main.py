@@ -11,7 +11,7 @@ exit = False
 
 class State:
 	def __init__(self, position):
-		self.position : list[int, int] = position
+		self.position : list[int] = position
 		self.selected : bool = False
 
 class Edge:
@@ -22,8 +22,8 @@ class Edge:
 
 states : "list[State]" = []
 edges : "list[Edge]" = []
-clicked_circle : State = None
-dragged_state : State = None
+clicked_circle : "State | None" = None
+dragged_state : "State | None" = None
 selected_letter : str = "0"
 
 def canPutCircleHere(location):
@@ -61,8 +61,8 @@ while not exit:
 				clicked_circle.selected = False
 				clicked_circle = None
 		elif event.type == pygame.MOUSEBUTTONUP:
-			if event.button == 1:            
-				dragged_state = False
+			if event.button == 1:
+				dragged_state = None
 		elif event.type == pygame.MOUSEMOTION:
 			if (dragged_state):
 				dx, dy = event.rel
