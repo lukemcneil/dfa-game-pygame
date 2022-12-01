@@ -6,19 +6,28 @@ pygame.init()
 
 RADIUS = 20
 LINE_WIDTH = 3
-CIRCLE_COLOR = [255,255,255]
+CIRCLE_COLOR = [120,120,120]
 SELECTED_CIRCLE_COLOR = [255,0,0]
-LINE_COLOR = [255,0,255]
-BACKGROUND_COLOR = [0, 0, 0]
-ARROW_HEIGHT = 10
-ARROW_WIDTH = 10
+LINE_COLOR = [0,0,0]
+BACKGROUND_COLOR = [255, 255, 255]
+ARROW_HEIGHT = 5
+ARROW_WIDTH = 8
 POINTING_BACK_SHIFT = 10
 FONT = pygame.font.SysFont("", 25)
 
-def drawStates(canvas, dfa):
+def drawStates(canvas, dfa : DFA):
 	for state in dfa.states:
 		color = CIRCLE_COLOR if not state.selected else SELECTED_CIRCLE_COLOR
 		pygame.draw.circle(canvas, color, state.position, RADIUS)
+		if state.is_accept_state:
+			pygame.draw.circle(canvas, color, state.position, RADIUS+2, 1)
+		if state == dfa.start_state:
+			pygame.draw.line(canvas, LINE_COLOR, (state.position[0] - 2*RADIUS, state.position[1]), (state.position[0] - RADIUS, state.position[1]), width=1)
+			point1 = (state.position[0] - RADIUS, state.position[1])
+			point2 = translatePoint(translatePoint(point1, math.pi/2, ARROW_HEIGHT), 0, ARROW_WIDTH)
+			point3 = translatePoint(translatePoint(point1, -math.pi/2, ARROW_HEIGHT), 0, ARROW_WIDTH)
+			pygame.draw.polygon(canvas, LINE_COLOR, ((point1), (point2), (point3)))
+
 
 def translatePoint(point, angle, distance):
 	return [point[0] - (distance * math.cos(angle)), point[1] + (distance * math.sin(angle))]

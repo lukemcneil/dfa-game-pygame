@@ -80,6 +80,13 @@ while not exit:
 				selected_letter = "0"
 			elif event.key == pygame.K_1:
 				selected_letter = "1"
+			elif event.key == pygame.K_e:
+				circle_at_pos = getCircleAtPosition(pygame.mouse.get_pos())
+				if circle_at_pos:
+					circle_at_pos.is_accept_state = not circle_at_pos.is_accept_state
+			elif event.key == pygame.K_s:
+				dfa.start_state = getCircleAtPosition(pygame.mouse.get_pos())
+
 	drawDFA(canvas, dfa, selected_letter)
 
 	pygame.display.update()
