@@ -1,6 +1,6 @@
 import pygame
 import math
-from draw_dfa import drawDFA, RADIUS
+from draw_dfa import drawDFA, RADIUS, INPUT_POSITION, INPUT_HEIGHT, INPUT_WIDTH
 from dfa_types import State, DFA
 
 pygame.init()
@@ -14,6 +14,8 @@ dfa = DFA([])
 clicked_circle : "State | None" = None
 dragged_state : "State | None" = None
 selected_letter : str = "0"
+input : str = ""
+input_rect = pygame.rect.Rect(INPUT_POSITION[0], INPUT_POSITION[1], INPUT_WIDTH, INPUT_HEIGHT)
 
 def canPutCircleHere(location):
 	for circle in dfa.states:
@@ -34,7 +36,7 @@ def removeEdges(removedState):
 			if state.edges[letter] == removedState:
 				state.edges.pop(letter)
 
-drawDFA(canvas, dfa, selected_letter)
+drawDFA(canvas, dfa, selected_letter, input)
 while not exit:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -78,19 +80,27 @@ while not exit:
 				if clicked_circle:
 					clicked_circle.selected = True
 		elif event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_0:
-				selected_letter = "0"
-			elif event.key == pygame.K_1:
-				selected_letter = "1"
-			elif event.key == pygame.K_e:
+			mouse_position = pygame.mouse.get_pos()
+			if input_rect.collidepoint(mouse_position[0], mouse_position[1]):
+				if event.key == pygame.K_0:
+					input = input + "0"
+				elif event.key == pygame.K_1:
+					input = input + "1"
+				elif event.key == pygame.K_BACKSPACE:
+					input = input[:-1]
+			else:
+				if event.key == pygame.K_0:
+					selected_letter = "0"
+				elif event.key == pygame.K_1:
+					selected_letter = "1"
+			if event.key == pygame.K_e:
 				circle_at_pos = getCircleAtPosition(pygame.mouse.get_pos())
 				if circle_at_pos:
 					circle_at_pos.is_accept_state = not circle_at_pos.is_accept_state
 			elif event.key == pygame.K_s:
 				dfa.start_state = getCircleAtPosition(pygame.mouse.get_pos())
 			elif event.key == pygame.K_RETURN:
-				print(dfa.run("001"))
-
-	drawDFA(canvas, dfa, selected_letter)
+				print(dfa.run(input))
+	drawDFA(canvas, dfa, selected_letter, input)
 
 	pygame.display.update()

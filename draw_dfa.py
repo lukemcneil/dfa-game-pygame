@@ -13,6 +13,9 @@ BACKGROUND_COLOR = [255, 255, 255]
 ARROW_HEIGHT = 5
 ARROW_WIDTH = 8
 POINTING_BACK_SHIFT = 10
+INPUT_POSITION = (200, 0)
+INPUT_HEIGHT = 20
+INPUT_WIDTH = 200
 FONT = pygame.font.SysFont("", 25)
 
 def drawStates(canvas, dfa : DFA):
@@ -74,8 +77,14 @@ def show_text(canvas, msg, color, position):
 	text = FONT.render( msg, True, color)
 	canvas.blit(text, position)
 
-def drawDFA(canvas : pygame.surface.Surface, dfa : DFA, selected_letter : str):
+def drawInputBox(canvas, input, color):
+	text = FONT.render(input, True, color)
+	pygame.draw.rect(canvas, [0,0,0],  pygame.rect.Rect(INPUT_POSITION[0], INPUT_POSITION[1], INPUT_WIDTH, INPUT_HEIGHT), width=1)
+	canvas.blit(text, INPUT_POSITION)
+
+def drawDFA(canvas : pygame.surface.Surface, dfa : DFA, selected_letter : str, input_str : str):
 	canvas.fill(BACKGROUND_COLOR)
 	drawEdges(canvas, dfa)
 	drawStates(canvas, dfa)
 	drawSelectedLetter(canvas, selected_letter)
+	drawInputBox(canvas, input_str, [0, 0, 0])
