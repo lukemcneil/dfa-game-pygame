@@ -44,6 +44,8 @@ while not exit:
 			if canPutCircleHere(mouse_position):
 				new_state = State(list(mouse_position))
 				dfa.states.append(new_state)
+				if len(dfa.states) == 1:
+					dfa.start_state = new_state
 				dragged_circle = None
 			else:
 				dragged_state = getCircleAtPosition(mouse_position)
@@ -86,6 +88,8 @@ while not exit:
 					circle_at_pos.is_accept_state = not circle_at_pos.is_accept_state
 			elif event.key == pygame.K_s:
 				dfa.start_state = getCircleAtPosition(pygame.mouse.get_pos())
+			elif event.key == pygame.K_RETURN:
+				print(dfa.run("001"))
 
 	drawDFA(canvas, dfa, selected_letter)
 
